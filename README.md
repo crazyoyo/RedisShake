@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/alibaba/RedisShake/actions/workflows/ci.yml/badge.svg?branch=v3)](https://github.com/alibaba/RedisShake/actions/workflows/ci.yml)
 
+V3版本使用clsuter_hepler实现Redis集群模式下的数据迁移，但此方式不支持自定义psync指令，例如AWS的Elasticache集群，此修改增加了此功能。
+
 - [中文文档](https://github.com/alibaba/RedisShake/wiki)
 
 redis-shake is a tool for Redis data migration and data filtering.
