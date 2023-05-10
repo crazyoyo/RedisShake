@@ -120,6 +120,8 @@ def main():
     username = toml_template["source"]["username"]
     password = toml_template["source"]["password"]
     tls = toml_template["source"]["tls"]
+    psyncs = toml_template["source"]["elasticache_psync"].split(";")
+    data_dir = toml_template["advanced"]["dir"]
     print(
         f"host: {host}, port: {port}, username: {username}, password: {password}, tls: {tls}"
     )
@@ -127,6 +129,7 @@ def main():
         host=host, port=port, username=username, password=password, ssl=tls
     )
     print("cluster nodes:", cluster.cluster_nodes())
+    redis_version = cluster.execute_command('INFO')['redis_version'][0:3]
 
     # parse cluster nodes
     for address, node in cluster.cluster_nodes().items():
@@ -136,11 +139,25 @@ def main():
     for k in nodes.keys():
         print(k)
 
+    # pair psync command for nodes
+    psync_dict = {}
+    primaries = cluster.get_primaries()
+    for n in range(len(primaries)):
+        for psync in psyncs:
+            try:
+                primaries[n].redis_connection.execute_command(psync, '?')
+            except Exception as e:
+                if "wrong number of arguments" in str(e):
+                    # print(str(e))
+                    psync_dict[primaries[n].name] = psync
+                    break;
+    print(psync_dict)
+
     # create workdir and start redis-shake
-    if os.path.exists("data"):
-        shutil.rmtree("data")
-    os.mkdir("data")
-    os.chdir("data")
+    if os.path.exists(data_dir):
+        shutil.rmtree(data_dir)
+    os.mkdir(data_dir)
+    os.chdir(data_dir)
     start_port = (
         11007
         if toml_template.get("advanced").get("metrics_port", 0) == 0
@@ -152,14 +169,21 @@ def main():
         os.mkdir(workdir)
         tmp_toml = toml_template
         tmp_toml["source"]["address"] = address
+        tmp_toml["source"]["elasticache_psync"] = psync_dict[address]
+        tmp_toml["source"]["version"] = float(redis_version)
+        tmp_toml["target"]["version"] = float(redis_version)
+
         start_port += 1
         tmp_toml["advanced"]["metrics_port"] = start_port
+        print(tmp_toml)
 
         with open(f"{workdir}/sync.toml", "w") as f:
             toml.dump(tmp_toml, f)
 
         # start redis-shake
-        args = [REDIS_SHAKE_PATH, f"sync.toml"]
+        toml_dir = os.path.abspath(workdir)
+        print(toml_dir)
+        args = [REDIS_SHAKE_PATH, f"{toml_dir}/sync.toml"]
         if LUA_FILTER_PATH != "":
             args.append(LUA_FILTER_PATH)
         launcher = Launcher(args=args, work_dir=workdir)

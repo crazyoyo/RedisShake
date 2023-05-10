@@ -1,4 +1,5 @@
 import os
+import time
 import signal
 import subprocess
 from pathlib import Path
@@ -13,6 +14,7 @@ class Launcher:
             Path(self.work_dir).mkdir(parents=True, exist_ok=True)
         self.stdout_file = open(work_dir + "/stdout", 'a')
         self.stderr_file = open(work_dir + "/stderr", 'a')
+        time.sleep(1)
         self.process = subprocess.Popen(self.args, stdout=self.stdout_file,
                                         stderr=self.stderr_file, cwd=self.work_dir,
                                         encoding="utf-8")

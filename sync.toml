@@ -6,10 +6,10 @@ address = "127.0.0.1:6379"
 username = "" # keep empty if not using ACL
 password = "" # keep empty if no authentication is required
 tls = false
-elasticache_psync = "" # using when source is ElastiCache. ref: https://github.com/alibaba/RedisShake/issues/373
+elasticache_psync = "psync;psync;psync" # using when source is ElastiCache. ref: https://github.com/alibaba/RedisShake/issues/373
 
 [target]
-type = "standalone" # "standalone" or "cluster"
+type = "cluster" # "standalone" or "cluster"
 version = 5.0 # redis version, such as 2.8, 4.0, 5.0, 6.0, 6.2, 7.0, ...
 # When the target is a cluster, write the address of one of the nodes.
 # redis-shake will obtain other nodes through the `cluster nodes` command.
@@ -42,7 +42,7 @@ log_interval = 5 # in seconds
 # panic:   redis-shake will stop when meet "Target key name is busy" error.
 # rewrite: redis-shake will replace the key with new value.
 # ignore:  redis-shake will skip restore the key when meet "Target key name is busy" error.
-rdb_restore_command_behavior = "rewrite" # panic, rewrite or skip
+rdb_restore_command_behavior = "panic" # panic, rewrite or skip
 
 # pipeline
 pipeline_count_limit = 1024
