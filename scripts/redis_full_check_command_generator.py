@@ -13,7 +13,7 @@ Usage:
 COMMAND_TEMPLATE = 'bin/redis-full-check -s "{}" -t "{}" --comparetimes=1 --sourcedbtype=1 --targetdbtype=1'
 
 def main():
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         print(USAGE)
         exit(1)
 
@@ -27,7 +27,7 @@ def main():
     source_cluster = redis.RedisCluster(
         host=sourcehost, port=sourceport
     )
-    print("source cluster nodes:", source_cluster.cluster_nodes())
+    print("source cluster nodes:", source_cluster.cluster_nodes(), "\n")
     source_masters = ""
     for s in source_cluster.get_primaries():
         source_masters += s.name + ";"
@@ -35,12 +35,12 @@ def main():
     target_cluster = redis.RedisCluster(
         host=targethost, port=targetport
     )
-    print("target cluster nodes:", target_cluster.cluster_nodes())
+    print("target cluster nodes:", target_cluster.cluster_nodes(), "\n")
     target_masters = ""
     for t in target_cluster.get_primaries():
         target_masters += t.name + ";"
 
-    print("the redis-full-check command is:", COMMAND_TEMPLATE.format())
+    print("the redis-full-check command is:\n\n", COMMAND_TEMPLATE.format(source_masters[:-1], target_masters[:-1]))
 
 
 if __name__ == "__main__":
