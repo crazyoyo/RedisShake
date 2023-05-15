@@ -159,7 +159,7 @@ def main():
     os.mkdir(data_dir)
     os.chdir(data_dir)
     start_port = (
-        0
+        11007
         if toml_template.get("advanced").get("metrics_port", 0) == 0
         else toml_template["advanced"]["metrics_port"]
     )
@@ -173,8 +173,8 @@ def main():
         tmp_toml["source"]["version"] = float(redis_version)
         tmp_toml["target"]["version"] = float(redis_version)
 
-        # start_port += 1
-        # tmp_toml["advanced"]["metrics_port"] = start_port
+        start_port += 1
+        tmp_toml["advanced"]["metrics_port"] = start_port
         print(tmp_toml)
 
         with open(f"{workdir}/sync.toml", "w") as f:
