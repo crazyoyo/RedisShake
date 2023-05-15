@@ -3,7 +3,16 @@
 [![CI](https://github.com/alibaba/RedisShake/actions/workflows/ci.yml/badge.svg?branch=v3)](https://github.com/alibaba/RedisShake/actions/workflows/ci.yml)
 
 V3版本使用clsuter_hepler实现Redis集群模式下的数据迁移，但此方式不支持自定义psync指令，例如AWS的Elasticache集群，此修改增加了此功能。
-指令实例：
+
+sync.toml配置：
+```xml
+[source]
+......
+elasticache_psync = "abcpsync;defpsync;ghipsync"
+......
+```
+
+指令示例：
 ```python
 python3 scripts/cluster_helper/cluster_helper.py ./bin/redis-shake sync.toml ./bin/filters/xxx.lua
 ```
