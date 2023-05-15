@@ -6,7 +6,7 @@ address = "127.0.0.1:6379"
 username = "" # keep empty if not using ACL
 password = "" # keep empty if no authentication is required
 tls = false
-elasticache_psync = "psync;psync;psync" # using when source is ElastiCache. ref: https://github.com/alibaba/RedisShake/issues/373
+elasticache_psync = "abcpsync;defpsync;ghipsync" # using when source is ElastiCache. ref: https://github.com/alibaba/RedisShake/issues/373
 
 [target]
 type = "cluster" # "standalone" or "cluster"
